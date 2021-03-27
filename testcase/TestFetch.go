@@ -15,11 +15,11 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 	err := repo.Set("gorepo", "2", data)
 	assert.NoError(t, err)
 
-	data = map[string]interface{}{
+	data2 := map[string]interface{}{
 		"a": "d",
 		"c": float64(12),
 	}
-	err = repo.Set("gorepo", "3", data)
+	err = repo.Set("gorepo", "3", data2)
 	assert.NoError(t, err)
 
 	getData := []map[string]interface{}{}
@@ -30,5 +30,9 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 	err = repo.Fetch("gorepo", filter, &getData)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, getData)
-
+	if len(getData) > 0 {
+		for key, val := range data {
+			assert.Equal(t, val, getData[0][key])
+		}
+	}
 }
