@@ -32,4 +32,5 @@ func TestSort(t *testing.T, repo gorepo.Repository) {
 	if len(getData) > 0 {
 		assert.Equal(t, "1", getData[0]["id"])
 	}
+	TestDelete(t, repo)
 }

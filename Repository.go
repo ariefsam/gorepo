@@ -5,6 +5,4 @@ type Repository interface {
 	Get(tableName string, id string, result interface{}) (err error)
 	Delete(tableName string, id string) (err error)
 	Fetch(tableName string, filter Filter, result interface{}) (err error)
-	Sync(name string, to Repository)
-	StopSync(name string)
 }

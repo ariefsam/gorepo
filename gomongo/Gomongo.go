@@ -16,12 +16,14 @@ type Gomongo struct {
 	Database   string
 }
 
+const errorConnect = "Failed to connect mongodb"
+
 func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
-		err = errors.Wrap(err, "Failed to connect mongodb")
+		err = errors.Wrap(err, errorConnect)
 		return
 	}
 	defer client.Disconnect(context.TODO())
@@ -42,7 +44,7 @@ func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
-		err = errors.Wrap(err, "Failed to connect mongodb")
+		err = errors.Wrap(err, errorConnect)
 		return
 	}
 	defer client.Disconnect(context.TODO())
@@ -59,7 +61,7 @@ func (gomongo Gomongo) Fetch(tableName string, filter gorepo.Filter, result inte
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
-		err = errors.Wrap(err, "Failed to connect mongodb")
+		err = errors.Wrap(err, errorConnect)
 		return
 	}
 	defer client.Disconnect(context.TODO())
@@ -89,11 +91,20 @@ func (gomongo Gomongo) Fetch(tableName string, filter gorepo.Filter, result inte
 	return
 }
 func (gomongo Gomongo) Delete(tableName string, id string) (err error) {
-	return
-}
-func (gomongo Gomongo) Sync(name string, to gorepo.Repository) {
-	return
-}
-func (gomongo Gomongo) StopSync(name string) {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
+	if err != nil {
+		err = errors.Wrap(err, errorConnect)
+		return
+	}
+	defer client.Disconnect(context.TODO())
+
+	coll := client.Database(gomongo.Database).Collection(tableName)
+
+	filter := bson.M{"id": id}
+
+	_, err = coll.DeleteOne(ctx, filter)
+
 	return
 }
