@@ -34,7 +34,7 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 	filter.Where = map[string]interface{}{
 		"a": "c",
 	}
-	err = repo.Fetch("gorepo", filter, &getData)
+	err = repo.Fetch("gorepo", &filter, &getData)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, getData)
 	if len(getData) > 0 {

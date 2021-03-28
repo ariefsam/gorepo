@@ -56,7 +56,7 @@ func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err
 	}
 	return
 }
-func (gomongo Gomongo) Fetch(tableName string, filter gorepo.Filter, result interface{}) (err error) {
+func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result interface{}) (err error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
@@ -69,13 +69,14 @@ func (gomongo Gomongo) Fetch(tableName string, filter gorepo.Filter, result inte
 
 	var filterMongo map[string]interface{}
 	option := options.Find()
+	if filter != nil {
+		if filter.Where != nil {
+			filterMongo = filter.Where
+		}
 
-	if filter.Where != nil {
-		filterMongo = filter.Where
-	}
-
-	if filter.Sort != nil {
-		option.SetSort(filter.Sort)
+		if filter.Sort != nil {
+			option.SetSort(filter.Sort)
+		}
 	}
 
 	cur, err := coll.Find(ctx, filterMongo, option)

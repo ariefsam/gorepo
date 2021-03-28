@@ -16,7 +16,7 @@ func TestDelete(t *testing.T, repo gorepo.Repository) {
 	}
 	data := []map[string]interface{}{}
 	var filter gorepo.Filter
-	err = repo.Fetch("gorepo", filter, &data)
+	err = repo.Fetch("gorepo", &filter, &data)
 	assert.NoError(t, err)
 	assert.Empty(t, data)
 }
