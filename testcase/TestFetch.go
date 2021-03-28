@@ -22,6 +22,13 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 	err = repo.Set("gorepo", "3", data2)
 	assert.NoError(t, err)
 
+	data2 = map[string]interface{}{
+		"a": "d",
+		"c": float64(13),
+	}
+	err = repo.Set("gorepo", "4", data2)
+	assert.NoError(t, err)
+
 	getData := []map[string]interface{}{}
 	var filter gorepo.Filter
 	filter.Where = map[string]interface{}{
@@ -35,4 +42,6 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 			assert.Equal(t, val, getData[0][key])
 		}
 	}
+
+	TestFetchAll(t, repo)
 }

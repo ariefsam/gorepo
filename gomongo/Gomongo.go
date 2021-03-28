@@ -66,10 +66,17 @@ func (gomongo Gomongo) Fetch(tableName string, filter gorepo.Filter, result inte
 	coll := client.Database(gomongo.Database).Collection(tableName)
 
 	var filterMongo map[string]interface{}
+	option := options.Find()
+
 	if filter.Where != nil {
 		filterMongo = filter.Where
 	}
-	cur, err := coll.Find(ctx, filterMongo, nil)
+
+	if filter.Sort != nil {
+		option.SetSort(filter.Sort)
+	}
+
+	cur, err := coll.Find(ctx, filterMongo, option)
 	if err != nil {
 		return errors.Wrap(err, "Failed to find operation")
 	}
