@@ -77,6 +77,10 @@ func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result int
 		if filter.Sort != nil {
 			option.SetSort(filter.Sort)
 		}
+
+		if filter.Limit != 0 {
+			option.SetLimit(int64(filter.Limit))
+		}
 	}
 
 	cur, err := coll.Find(ctx, filterMongo, option)
