@@ -14,9 +14,18 @@ import (
 type Gomongo struct {
 	Connection string
 	Database   string
+	PrimaryKey string
 }
 
 const errorConnect = "Failed to connect mongodb"
+
+func (gomongo Gomongo) primaryKey() (primaryKey string) {
+	primaryKey = gomongo.PrimaryKey
+	if primaryKey == "" {
+		primaryKey = "_id"
+	}
+	return
+}
 
 func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -33,7 +42,8 @@ func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err e
 	var option options.UpdateOptions
 	t := true
 	option.Upsert = &t
-	filter := bson.M{"id": id}
+	primaryKey := gomongo.primaryKey()
+	filter := bson.M{primaryKey: id}
 	toUpdate := bson.M{"$set": data}
 
 	_, err = coll.UpdateOne(ctx, filter, toUpdate, &option)
@@ -51,7 +61,8 @@ func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err
 	}
 	defer client.Disconnect(context.TODO())
 	coll := client.Database(gomongo.Database).Collection(tableName)
-	filter := bson.M{"id": id}
+	primaryKey := gomongo.primaryKey()
+	filter := bson.M{primaryKey: id}
 	err = coll.FindOne(ctx, filter).Decode(result)
 	if err != nil {
 		return errors.New("Failed to find one in mongodb")
@@ -110,8 +121,8 @@ func (gomongo Gomongo) Delete(tableName string, id string) (err error) {
 	defer client.Disconnect(context.TODO())
 
 	coll := client.Database(gomongo.Database).Collection(tableName)
-
-	filter := bson.M{"id": id}
+	primaryKey := gomongo.primaryKey()
+	filter := bson.M{primaryKey: id}
 
 	_, err = coll.DeleteOne(ctx, filter)
 

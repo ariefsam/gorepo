@@ -18,7 +18,7 @@ func TestSort(t *testing.T, repo gorepo.Repository) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, getData)
 	if len(getData) > 0 {
-		assert.Equal(t, "4", getData[0]["id"])
+		assert.Equal(t, float64(13), getData[0]["c"])
 	}
 
 	sort = map[string]interface{}{
@@ -30,7 +30,7 @@ func TestSort(t *testing.T, repo gorepo.Repository) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, getData)
 	if len(getData) > 0 {
-		assert.Equal(t, "1", getData[0]["id"])
+		assert.Equal(t, float64(10), getData[0]["c"])
 	}
 	TestLimit(t, repo)
 }
