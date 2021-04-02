@@ -19,7 +19,8 @@ type Gomongo struct {
 const errorConnect = "Failed to connect mongodb"
 
 func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
@@ -40,7 +41,8 @@ func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err e
 	return
 }
 func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
@@ -57,7 +59,8 @@ func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err
 	return
 }
 func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result interface{}) (err error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
@@ -96,7 +99,8 @@ func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result int
 	return
 }
 func (gomongo Gomongo) Delete(tableName string, id string) (err error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
 	if err != nil {
