@@ -9,5 +9,6 @@ require (
 	github.com/stretchr/testify v1.6.1
 	go.mongodb.org/mongo-driver v1.5.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
+	gorm.io/driver/mysql v1.0.5 // indirect
 	gorm.io/gorm v1.21.6 // indirect
 )

@@ -1,4 +1,4 @@
-# gorepo
+# GoRepo
 database wrapper for Go Programming Language
 
 # Release Note #

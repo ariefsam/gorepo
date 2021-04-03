@@ -22,5 +22,12 @@ func TestNew(t *testing.T) {
 
 	repo := gomysql.New(connectionString, databaseName)
 
+	type Abc struct {
+		Ab string  `bson:"a_B"`
+		C  float64 `bson:"c"`
+	}
+	var abc Abc
+	repo.Automigrate("gorepo", &abc)
+
 	testcase.TestSet(t, repo)
 }
