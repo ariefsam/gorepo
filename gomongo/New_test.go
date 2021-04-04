@@ -20,7 +20,8 @@ func TestNew(t *testing.T) {
 	connectionString := os.Getenv("MONGODB_CONNECTION_STRING")
 	databaseName := os.Getenv("MONGODB_DB_NAME")
 
-	repo := gomongo.New(connectionString, databaseName)
+	repo := gomongo.New(connectionString, databaseName, "gorepo", "id")
+	repo.PrimaryKey = "id"
 
 	testcase.TestSet(t, repo)
 }

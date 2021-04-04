@@ -9,14 +9,15 @@ import (
 
 func TestSet(t *testing.T, repo gorepo.Repository) {
 	data := map[string]interface{}{
-		"a": "b",
-		"c": float64(10),
+		"id": "1",
+		"a":  "b",
+		"c":  float64(10),
 	}
-	err := repo.Set("gorepo", "1", data)
+	err := repo.Create(data)
 	assert.NoError(t, err)
 
 	getData := map[string]interface{}{}
-	err = repo.Get("gorepo", "1", &getData)
+	err = repo.Get("1", &getData)
 	assert.NoError(t, err)
 
 	for key, val := range data {
@@ -24,11 +25,12 @@ func TestSet(t *testing.T, repo gorepo.Repository) {
 	}
 
 	data["a"] = "b edited"
-	err = repo.Set("gorepo", "1", data)
+
+	err = repo.Update("1", data)
 	assert.NoError(t, err)
 
 	getData = map[string]interface{}{}
-	err = repo.Get("gorepo", "1", &getData)
+	err = repo.Get("1", &getData)
 	assert.NoError(t, err)
 
 	for key, val := range data {

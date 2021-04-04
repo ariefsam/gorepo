@@ -11,6 +11,16 @@ type Gomysql struct {
 	PrimaryKey string
 }
 
+func (g Gomysql) primaryKey() (primaryKey string) {
+	primaryKey = g.PrimaryKey
+	if primaryKey == "" {
+		primaryKey = "id"
+	}
+	return
+}
+
+const errorConnect = "Failed to connect mysql"
+
 func (g Gomysql) Automigrate(tablename string, data interface{}) (err error) {
 	db, err := gorm.Open(mysql.Open(g.Connection), &gorm.Config{})
 	if err != nil {
@@ -21,7 +31,14 @@ func (g Gomysql) Automigrate(tablename string, data interface{}) (err error) {
 }
 
 func (g Gomysql) Set(tablename string, id string, data interface{}) (err error) {
-	// db, err := gorm.Open(mysql.Open(g.Connection), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(g.Connection), &gorm.Config{})
+	if err != nil {
+		return
+	}
+	if db.Table(tablename).Where(g.primaryKey()+"=?", id).Updates(data).RowsAffected == 0 {
+		db.Table(tablename).Create(data)
+	}
+
 	return
 }
 

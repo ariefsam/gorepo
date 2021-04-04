@@ -13,7 +13,7 @@ func TestLimit(t *testing.T, repo gorepo.Repository) {
 	data := []map[string]interface{}{}
 	var filter gorepo.Filter
 	filter.Limit = 2
-	err = repo.Fetch("gorepo", &filter, &data)
+	err = repo.Fetch(&filter, &data)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, data)
 	assert.Len(t, data, 2)

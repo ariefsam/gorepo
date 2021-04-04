@@ -2,6 +2,7 @@ package gomongo
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/ariefsam/gorepo"
@@ -12,9 +13,10 @@ import (
 )
 
 type Gomongo struct {
-	Connection string
-	Database   string
-	PrimaryKey string
+	Connection     string
+	Database       string
+	PrimaryKey     string
+	CollectionName string
 }
 
 const errorConnect = "Failed to connect mongodb"
@@ -27,7 +29,7 @@ func (gomongo Gomongo) primaryKey() (primaryKey string) {
 	return
 }
 
-func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err error) {
+func (gomongo Gomongo) Create(data interface{}) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -38,7 +40,41 @@ func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err e
 	}
 	defer client.Disconnect(context.TODO())
 
-	coll := client.Database(gomongo.Database).Collection(tableName)
+	coll := client.Database(gomongo.Database).Collection(gomongo.CollectionName)
+	primaryKey := gomongo.primaryKey()
+	if primaryKey != "_id" {
+		var opt options.IndexOptions
+		t := true
+		opt.Unique = &t
+		mod := mongo.IndexModel{
+			Keys: bson.M{
+				primaryKey: 1, // index in ascending order
+			}, Options: &opt,
+		}
+		s, err := coll.Indexes().CreateOne(context.TODO(), mod)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(s)
+	}
+
+	_, err = coll.InsertOne(ctx, data)
+
+	return
+}
+
+func (gomongo Gomongo) Update(id string, data interface{}) (err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(gomongo.Connection))
+	if err != nil {
+		err = errors.Wrap(err, errorConnect)
+		return
+	}
+	defer client.Disconnect(context.TODO())
+
+	coll := client.Database(gomongo.Database).Collection(gomongo.CollectionName)
 	var option options.UpdateOptions
 	t := true
 	option.Upsert = &t
@@ -50,7 +86,8 @@ func (gomongo Gomongo) Set(tableName string, id string, data interface{}) (err e
 
 	return
 }
-func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err error) {
+
+func (gomongo Gomongo) Get(id string, result interface{}) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -60,7 +97,7 @@ func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err
 		return
 	}
 	defer client.Disconnect(context.TODO())
-	coll := client.Database(gomongo.Database).Collection(tableName)
+	coll := client.Database(gomongo.Database).Collection(gomongo.CollectionName)
 	primaryKey := gomongo.primaryKey()
 	filter := bson.M{primaryKey: id}
 	err = coll.FindOne(ctx, filter).Decode(result)
@@ -69,7 +106,7 @@ func (gomongo Gomongo) Get(tableName string, id string, result interface{}) (err
 	}
 	return
 }
-func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result interface{}) (err error) {
+func (gomongo Gomongo) Fetch(filter *gorepo.Filter, result interface{}) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -79,7 +116,7 @@ func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result int
 		return
 	}
 	defer client.Disconnect(context.TODO())
-	coll := client.Database(gomongo.Database).Collection(tableName)
+	coll := client.Database(gomongo.Database).Collection(gomongo.CollectionName)
 
 	var filterMongo map[string]interface{}
 	option := options.Find()
@@ -109,7 +146,7 @@ func (gomongo Gomongo) Fetch(tableName string, filter *gorepo.Filter, result int
 	}
 	return
 }
-func (gomongo Gomongo) Delete(tableName string, id string) (err error) {
+func (gomongo Gomongo) Delete(id string) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -120,7 +157,7 @@ func (gomongo Gomongo) Delete(tableName string, id string) (err error) {
 	}
 	defer client.Disconnect(context.TODO())
 
-	coll := client.Database(gomongo.Database).Collection(tableName)
+	coll := client.Database(gomongo.Database).Collection(gomongo.CollectionName)
 	primaryKey := gomongo.primaryKey()
 	filter := bson.M{primaryKey: id}
 

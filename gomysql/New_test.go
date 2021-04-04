@@ -10,6 +10,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Abc struct {
+	Ab string  `bson:"a_B"`
+	C  float64 `bson:"c"`
+}
+
+func (a Abc) TableName() string {
+	return "gorepo"
+}
 func TestNew(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	err := godotenv.Load()
@@ -22,10 +30,6 @@ func TestNew(t *testing.T) {
 
 	repo := gomysql.New(connectionString, databaseName)
 
-	type Abc struct {
-		Ab string  `bson:"a_B"`
-		C  float64 `bson:"c"`
-	}
 	var abc Abc
 	repo.Automigrate("gorepo", &abc)
 
