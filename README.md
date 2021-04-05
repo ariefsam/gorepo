@@ -8,6 +8,6 @@ database wrapper for Go Programming Language
 ## v1.1.0 ##
 - Add PFAdd and PFCount for redis
 
-## v1.2.0 ##
+## v2.0.0 ##
 - Primary key configuration
 - MySQL interface using gorm
