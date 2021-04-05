@@ -11,8 +11,9 @@ import (
 )
 
 type Abc struct {
-	Ab string  `bson:"a_B"`
-	C  float64 `bson:"c"`
+	ID string  `gorm:"primaryKey;column:id"`
+	Ab string  `gorm:"column:a_B"`
+	C  float64 `gorm:"column:c"`
 }
 
 func (a Abc) TableName() string {
@@ -26,12 +27,12 @@ func TestNew(t *testing.T) {
 	}
 
 	connectionString := os.Getenv("MYSQL_CONNECTION_STRING")
-	databaseName := os.Getenv("MYSQL_DB_NAME")
 
-	repo := gomysql.New(connectionString, databaseName)
+	repo := gomysql.New(connectionString, "gorepo", "id")
 
 	var abc Abc
-	repo.Automigrate("gorepo", &abc)
+	repo.Automigrate(&abc)
+	repo.Model = abc
 
 	testcase.TestSet(t, repo)
 }

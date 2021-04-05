@@ -9,9 +9,9 @@ import (
 
 func TestSet(t *testing.T, repo gorepo.Repository) {
 	data := map[string]interface{}{
-		"id": "1",
-		"a":  "b",
-		"c":  float64(10),
+		"id":  "1",
+		"a_B": "b",
+		"c":   float64(10),
 	}
 	err := repo.Create(data)
 	assert.NoError(t, err)
@@ -24,7 +24,7 @@ func TestSet(t *testing.T, repo gorepo.Repository) {
 		assert.Equal(t, val, getData[key])
 	}
 
-	data["a"] = "b edited"
+	data["a_B"] = "b edited"
 
 	err = repo.Update("1", data)
 	assert.NoError(t, err)

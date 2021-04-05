@@ -21,13 +21,13 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 		"a_B": "d",
 		"c":   float64(12),
 	}
-	err = repo.Update("3", data2)
+	err = repo.Create(data2)
 	assert.NoError(t, err)
 
 	type Abc struct {
-		ID string  `bson:"id"`
-		Ab string  `bson:"a_B"`
-		C  float64 `bson:"c"`
+		ID string  `bson:"id" gorm:"column:id"`
+		Ab string  `bson:"a_B" gorm:"column:a_B"`
+		C  float64 `bson:"c" gorm:"column:c"`
 	}
 
 	data3 := Abc{
@@ -49,6 +49,7 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 		"a_B": "d",
 		"c":   float64(13),
 	}
+
 	err = repo.Get("4", &getAbcMap)
 	assert.NoError(t, err)
 	if len(getAbcMap) > 0 {
@@ -63,6 +64,7 @@ func TestFetch(t *testing.T, repo gorepo.Repository) {
 		"a_B": "c",
 	}
 	err = repo.Fetch(&filter, &getData)
+
 	assert.NoError(t, err)
 	assert.NotEmpty(t, getData)
 	if len(getData) > 0 {
